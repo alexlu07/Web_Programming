@@ -35,10 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelector('#join').onsubmit = () => {
         // Initialize new request
-
         console.log("1");
         const request = new XMLHttpRequest();
-        const search = document.querySelector("search").value;
+        const search = document.querySelector("#search").value;
 
         request.open('POST', '/join');
         // Callback function for when request completes
