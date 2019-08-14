@@ -6,24 +6,20 @@ class User:
     password = ""
 
     channels = set()
-    current_channel = ""
 
-    def __init__(self, name):
+    def __init__(self, name, password):
         self.name = name
+        self.password = password
 
     def join_channel(self, channel):
         self.channels.add(channel)
         self.current_channel = channel
 
-    def change_channel(self, channel):
-        if channel in channels:
-            self.current_channel = channel
-
-    def current_channel(self):
-        return self.current_channel
-
     def get_name(self):
         return self.name
+
+    def get_password(self):
+        return self.password
 
     def get_channels(self):
         return self.channels
@@ -32,10 +28,10 @@ class User:
 class Users:
     users = {}
 
-    def create_user(self, name):
-        if name in users:
+    def create_user(self, name, password):
+        if name in self.users.keys():
             return False;
-        user = User(name)
+        user = User(name, password)
         self.users[name] = user
 
     def get_user(self, name):
@@ -68,15 +64,26 @@ class Channel:
     def get_messages(self):
         return self.messages
 
+    def get_name(self):
+        return self.name
+
 class Channels:
     channels = {}
+    bob = Channel("bob")
+    channels["bob"] = bob
+    print(channels)
 
+    def create_channel(self, name):
+        if name in self.channels.keys():
+            return False
+        channel = Channel(name)
+        self.channels[name] = channel
 
-# from flask_sqlalchemy import SQLAlechemy
-#
-# db = SQLAlchemy()
-#
-# class Channel(db.model):
-#     __tablename__ = "channels"
-#     name = db.Column(db.String, nullable=False)
-#     users = db.Column()
+    def get_channel(self, name):
+        if name in self.channels:
+            return self.channels[name]
+        else:
+            return None
+
+    def get_channels(self):
+        return self.channels.keys()

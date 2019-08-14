@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Chatroom</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src= " {{ url_for('static', filename="js/channels.js") }} " ></script>
+    <style media="screen">
+
+        h1 , h3, p, a, select{
+          margin-left: 12vw;
+          margin-top: 6vw;
+        }
+
+    </style>
+  </head>
+  <body>
+    <h1>Hello, {{ username }}!</h1>
+
+    <form id = "enter" >
+        <select name="channel">
+            {% for x in channel_list %}
+            <option value={{ x }} >{{ x }}</option></p>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Enter">
+    </form>
+
+    <form id="join">
+        <input id="search" type="search" name="search" placeholder="Join new channel...">
+        <button id="submit" type="submit">Submit</button>
+    </form>
+
+    <form id = "channels">
+
+    </form>
+  </body>
+</html>
