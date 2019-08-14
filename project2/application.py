@@ -77,11 +77,14 @@ def room(channel):
 def join():
     channel = request.form.get("channel")
     search = request.form.get("search")
+    new_channel = request.form.get("new_channel")
+    print(new_channel)
     print(channel)
     print(search)
+
+
     channel_names = list(channels.get_channels())
     results = []
-    print(channel_names)
 
     if channel:
         return redirect(url_for("room", channel = channel))
@@ -91,5 +94,12 @@ def join():
         print(results)
         return jsonify(results = results)
 
+    if new_channel:
+        username = session["username"]
+        user = users.get_user(username)
+        user.join_channel(new_channel)
+        return redirect(url_for("room", channel = new_channel))
+
+
     print("rip")
-    return render_template()
+    return False

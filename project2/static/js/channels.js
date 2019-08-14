@@ -19,12 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Callback function for when request completes
         request.onload = () => {
           console.log("hi");
-        }
+        };
 
 
         request.onerror = function(e) {
             console.log("request.error called. Error: " + e);
-        }
+        };
 
         console.log(channel);
         const data = new FormData();
@@ -43,27 +43,53 @@ document.addEventListener('DOMContentLoaded', () => {
         // Callback function for when request completes
         request.onload = () => {
           const data = JSON.parse(request.responseText);
-          const array = data["results"]
-          const sl = document.createElement('select');
-          const op = document.createElement('option');
+          const array = data.results;
 
-          document.querySelector('#channels').append(sl);
-          for(var i = 0; i < array.length; i++) {
-              sl.append(op)
-              console.log("hi");
-              op.outerHTML = "<option value = " + array[i] + ">" + array[i] + "</option>"
+          if(array.length > 0) {
+              const op = document.createElement('option');
 
+              for(var i = 0; i < array.length; i++) {
+                  document.querySelector("#new_channel").append(op);
+                  op.outerHTML = "<option value = " + array[i] + ">" + array[i] + "</option>";
+
+              }
+
+              document.querySelector("#new_channel").hidden = false;
+              document.querySelector("#submit_new_channel").hidden = false;
+              console.log(op.value);
           }
-          console.log("2");
-        }
 
+        };
 
         request.onerror = function(e) {
             console.log("request.error called. Error: " + e);
-        }
+        };
 
         const data = new FormData();
         data.append('search', search);
+        request.send(data);
+        return false;
+    };
+
+    document.querySelector('#channels').onsubmit = () => {
+        // Initialize new request
+        console.log("hi");
+        const request = new XMLHttpRequest();
+        const new_channel = document.querySelector('#new_channel').value;
+
+        request.open('POST', '/join');
+
+        request.onload = () => {
+            console.log("hi");
+
+        };
+
+        request.onerror = function(e) {
+            console.log("request.error called. Error: " + e);
+        };
+
+        const data = new FormData();
+        data.append('new_channel', new_channel);
         request.send(data);
         return false;
     };
