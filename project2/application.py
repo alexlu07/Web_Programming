@@ -17,6 +17,12 @@ users.create_user("bob", "123")
 channels.create_channel("bobsayshi")
 users.get_user("bob").join_channel("bobsayshi")
 channels.get_channel("bobsayshi").add_user("bob")
+
+
+def get_user():
+    username = session["username"]
+    return users.get_user(username)
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -61,45 +67,30 @@ def new():
 
 @app.route("/channels")
 def channel_list():
-    print("hi")
     username = session["username"]
-    user = users.get_user(username)
     channel_names = channels.get_channels()
     return render_template("channels.html", username = username, channel_list=channel_names)
 
-@app.route("/channels/<channel>")
-def room(channel):
+@app.route("/join", methods=["POST", "GET"])
+def join():
+    print(request)
+    channel = request.form.get("channel")
+
+    user = get_user()
+    user.join_channel(channel)
     messages = channels.get_channel(channel).get_messages()
+
+    print("channel=" + channel)
+    print(channels.get_channels())
+    print(messages)
     return render_template("room.html", messages = messages)
 
-
-@app.route("/join", methods=["POST"])
-def join():
-    channel = request.form.get("channel")
+@app.route("/search", methods=["POST"])
+def search():
     search = request.form.get("search")
-    new_channel = request.form.get("new_channel")
-    print(new_channel)
-    print(channel)
-    print(search)
-
+    print("search=" + search)
 
     channel_names = list(channels.get_channels())
-    results = []
-
-    if channel:
-        return redirect(url_for("room", channel = channel))
-
-    if search:
-        results = [x for x in channel_names if search in x]
-        print(results)
-        return jsonify(results = results)
-
-    if new_channel:
-        username = session["username"]
-        user = users.get_user(username)
-        user.join_channel(new_channel)
-        return redirect(url_for("room", channel = new_channel))
-
-
-    print("rip")
-    return False
+    results  = [x for x in channel_names if search in x]
+    print(results)
+    return jsonify(results = results)
