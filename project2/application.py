@@ -75,15 +75,9 @@ def channel_list():
 def join():
     print(request)
     channel = request.form.get("channel")
-
     user = get_user()
     user.join_channel(channel)
-    messages = channels.get_channel(channel).get_messages()
-
-    print("channel=" + channel)
-    print(channels.get_channels())
-    print(messages)
-    return render_template("room.html", messages = messages)
+    return redirect(url_for("room", channel=channel))
 
 @app.route("/search", methods=["POST"])
 def search():
@@ -94,3 +88,9 @@ def search():
     results  = [x for x in channel_names if search in x]
     print(results)
     return jsonify(results = results)
+
+@app.route("/channel/<channel>")
+def room(channel):
+    messages = channels.get_channel(channel).get_messages()
+    print(messages)
+    return render_template("room.html", messages = messages)
