@@ -58,8 +58,8 @@ class Channel:
     def get_users(self):
         return self.users
 
-    def append_messages(self, message):
-        self.messages.append(message)
+    def append_messages(self, username, message):
+        self.messages.append([username, message])
 
     def get_messages(self):
         return self.messages

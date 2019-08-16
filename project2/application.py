@@ -77,6 +77,7 @@ def join():
     channel = request.form.get("channel")
     user = get_user()
     user.join_channel(channel)
+    session["channel"] = channel
     return redirect(url_for("room", channel=channel))
 
 @app.route("/search", methods=["POST"])
@@ -91,6 +92,24 @@ def search():
 
 @app.route("/channel/<channel>")
 def room(channel):
-    messages = channels.get_channel(channel).get_messages()
+    return render_template("room.html")
+
+@socketio.on("return_message")
+def append_message(message):
+    message = message["message"]
+    username = session["username"]
+    channel = session["channel"]
+    channels.get_channel(channel).append_messages(username, message)
+    print("username: {}, message: {}".format(username, message))
+    emit('append_message', {"message": message, "username": username}, broadcast = True)
+
+@socketio.on("get_all_messages")
+def all_messages():
+    channel = session["channel"]
+    user_messages = channels.get_channel(channel).get_messages()
+    print("channel: {}, messages: {}".format(channel, str(user_messages)))
+    users = [ pair[0] for pair in user_messages]
+    messages = [ pair[1] for pair in user_messages]
+    print(users)
     print(messages)
-    return render_template("room.html", messages = messages)
+    emit("all_messages", {"users": users, "messages": messages})

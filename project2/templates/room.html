@@ -3,8 +3,17 @@
   <head>
     <meta charset="utf-8">
     <title></title>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script src=" {{ url_for('static', filename="js/room.js") }} "></script>
   </head>
   <body>
-    hiiiiifd
+    <div id="messages">
+
+    </div>
+
+    <form>
+        <input id = "input_message"type="text" name="message">
+        <input type="submit">
+    </form>
   </body>
 </html>
