@@ -1,27 +1,37 @@
 import os
-import classes
+from classes import *
 from flask import Flask, request, render_template, redirect, url_for, session
 from flask import Flask
 from flask import jsonify, json
 import requests
+import pprint
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR\xa1\xa8"
 socketio = SocketIO(app)
 
-users = classes.Users()
-channels = classes.Channels()
+user_derek = all_users.create_user("derek", "123")
+user_alex  = all_users.create_user("alex", "123")
+user_jun   = all_users.create_user("jun", "123")
 
-users.create_user("bob", "123")
-channels.create_channel("bobsayshi")
-users.get_user("bob").join_channel("bobsayshi")
-channels.get_channel("bobsayshi").add_user("bob")
+channelAlex = "Alex_private"
+channelDerek = "Derek_private"
+channelJun = "Jun_family"
+all_channels.create_channel(channelJun)
+all_channels.create_channel(channelAlex)
+all_channels.create_channel(channelDerek)
 
+user_alex.join_channel(channelJun)
+user_alex.join_channel(channelAlex)
+user_alex.join_channel(channelDerek)
+user_derek.join_channel(channelJun)
+user_derek.join_channel(channelDerek)
+user_jun.join_channel(channelJun)
 
 def get_user():
     username = session["username"]
-    return users.get_user(username)
+    return all_users.get_user(username)
 
 @app.route("/")
 def index():
@@ -31,8 +41,8 @@ def index():
 def login():
     username = request.form.get("username")
     password = request.form.get("password")
-    userlist = users.get_users()
-    user = users.get_user(username)
+    userlist = all_users.get_users()
+    user = all_users.get_user(username)
     if not userlist or not user:
         return jsonify({"success": False})
     if user.get_password() != password:
@@ -52,7 +62,7 @@ def new():
     username = request.form.get("username")
     password = request.form.get("password")
     confirm_password = request.form.get("confirm_password")
-    userlist = users.get_users().keys()
+    userlist = all_users.get_users().keys()
 
     if password != confirm_password:
         return jsonify({"success": False, "message": "Passwords do not match"})
@@ -60,7 +70,7 @@ def new():
     if username in userlist:
         return jsonify({"success": False, "message": "Username already taken"})
 
-    users.create_user(username, password)
+    all_users.create_user(username, password, all_channels)
 
     session["username"] = username
     return jsonify({"success": True})
@@ -68,7 +78,7 @@ def new():
 @app.route("/channels")
 def channel_list():
     username = session["username"]
-    channel_names = channels.get_channels()
+    channel_names = all_channels.get_channels()
     return render_template("channels.html", username = username, channel_list=channel_names)
 
 @app.route("/join", methods=["POST", "GET"])
@@ -76,6 +86,7 @@ def join():
     print(request)
     channel = request.form.get("channel")
     user = get_user()
+    print(channel)
     user.join_channel(channel)
     session["channel"] = channel
     return redirect(url_for("room", channel=channel))
@@ -85,12 +96,12 @@ def search():
     search = request.form.get("search")
     print("search=" + search)
 
-    channel_names = list(channels.get_channels())
+    channel_names = list(all_channels.get_channels())
     results  = [x for x in channel_names if search in x]
     print(results)
     return jsonify(results = results)
 
-@app.route("/channel/<channel>")
+@app.route("/channels/<channel>")
 def room(channel):
     return render_template("room.html")
 
@@ -99,15 +110,18 @@ def append_message(message):
     message = message["message"]
     username = session["username"]
     channel = session["channel"]
-    channels.get_channel(channel).append_messages(username, message)
-    print("username: {}, message: {}".format(username, message))
+    all_channels.get_channel(channel).append_messages(username, message)
+    print("username: {}, message: {}, channel: {}".format(username, message, channel))
     emit('append_message', {"message": message, "username": username}, broadcast = True)
 
 @socketio.on("get_all_messages")
 def all_messages():
     channel = session["channel"]
-    user_messages = channels.get_channel(channel).get_messages()
-    print("channel: {}, messages: {}".format(channel, str(user_messages)))
+    user_messages = all_channels.get_channel(channel).get_messages()
+    # print("channel: {}, messages: {}".format(channel, str(user_messages)))
+    # print("channel: {}, messages: {}".format("bobsayshi", str(all_channels.get_channel("bobsayshi").get_messages())))
+    # print("channel: {}, messages: {}".format("bob", str(all_channels.get_channel("bob").get_messages())))
+    pprint.pprint(all_channels)
     users = [ pair[0] for pair in user_messages]
     messages = [ pair[1] for pair in user_messages]
     print(users)

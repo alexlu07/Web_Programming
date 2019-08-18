@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     socket.on("all_messages", data => {
+        document.querySelector("#messages").innerHTML = "";
         console.log(messages);
         users = data.users;
         messages = data.messages;

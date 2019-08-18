@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   console.log("hii");
                }
                else {
-                 window.location.replace("http://192.168.86.35:5000/channels");
+                  window.location.href = "/channels";
                }
             }
 
