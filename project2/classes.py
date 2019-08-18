@@ -2,14 +2,13 @@
 import pprint
 
 class Channel:
-    name = ""
-    users = set()
-    messages = []
-
     def __init__(self, name):
         self.name = name
+        self.users = set()
+        self.messages = []
 
     def add_user(self, user):
+        #print("channel: {} add user {}".format(self.name, user))
         self.users.add(user)
 
     def get_users(self):
@@ -26,7 +25,7 @@ class Channel:
 
     def __repr__(self):
         result = {
-        "channel": self.name,
+        "channel_name": self.name,
         "users" : self.users,
         "messages": self.messages,
         }
@@ -36,7 +35,8 @@ class Channel:
         return pprint.pformat(self.__repr__())
 
 class Channels:
-    channels = {}
+    def __init__(self):
+        self.channels = {}
 
     def create_channel(self, name):
         if name in self.channels.keys():
@@ -49,6 +49,11 @@ class Channels:
             return self.channels[name]
         else:
             return None
+
+    def join_channel(self, username, channel_name):
+        # import pdb; pdb.set_trace()
+        if channel_name in self.channels.keys():
+            self.channels[channel_name].add_user(username)
 
     def get_channels(self):
         return self.channels.keys()
@@ -63,17 +68,15 @@ class Channels:
 all_channels = Channels()
 
 class User:
-    name = ""
-    password = ""
-    channels = set()
-
     def __init__(self, name, password):
         self.name = name
         self.password = password
+        self.channels = set()
 
     def join_channel(self, channel):
+        #print("user: {} add channel {}".format(self.name, channel))
         self.channels.add(channel)
-        all_channels.get_channel(channel).add_user(self.name)
+        all_channels.join_channel(self.name, channel)
 
     def get_name(self):
         return self.name
@@ -84,8 +87,19 @@ class User:
     def get_channels(self):
         return self.channels
 
+    def __repr__(self):
+        result = {
+            "username": self.name,
+            "channels": self.channels
+             }
+        return pprint.pformat(result) + "\n"
+
+    def __str__(self):
+        return pprint.pformat(self.__repr__())
+
 class Users:
-    users = {}
+    def __init__(self):
+        self.users = {}
 
     def create_user(self, name, password):
         if name in self.users.keys():
@@ -102,5 +116,12 @@ class Users:
 
     def get_users(self):
         return self.users
+
+    def __repr__(self):
+        result = { "Users": self.users }
+        return pprint.pformat(result) + "\n"
+
+    def __str__(self):
+        return pprint.pformat(self.__repr__())
 
 all_users = Users()

@@ -15,12 +15,18 @@ user_derek = all_users.create_user("derek", "123")
 user_alex  = all_users.create_user("alex", "123")
 user_jun   = all_users.create_user("jun", "123")
 
+print("=" * 10 + " 1")
+pprint.pprint(all_users)
+pprint.pprint(all_channels)
+
 channelAlex = "Alex_private"
 channelDerek = "Derek_private"
 channelJun = "Jun_family"
+
 all_channels.create_channel(channelJun)
 all_channels.create_channel(channelAlex)
 all_channels.create_channel(channelDerek)
+all_channels.create_channel("Nothing")
 
 user_alex.join_channel(channelJun)
 user_alex.join_channel(channelAlex)
@@ -118,9 +124,7 @@ def append_message(message):
 def all_messages():
     channel = session["channel"]
     user_messages = all_channels.get_channel(channel).get_messages()
-    # print("channel: {}, messages: {}".format(channel, str(user_messages)))
-    # print("channel: {}, messages: {}".format("bobsayshi", str(all_channels.get_channel("bobsayshi").get_messages())))
-    # print("channel: {}, messages: {}".format("bob", str(all_channels.get_channel("bob").get_messages())))
+    pprint.pprint(all_users)
     pprint.pprint(all_channels)
     users = [ pair[0] for pair in user_messages]
     messages = [ pair[1] for pair in user_messages]
