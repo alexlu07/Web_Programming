@@ -109,6 +109,20 @@ def search():
 def room(channel):
     return render_template("room.html")
 
+@socketio.on('join')
+def on_join():
+    username = session['username']
+    channel = session['channel']
+    join_room(channel)
+    emit("joined_channel", username + ' has entered the room.', room=channel)
+
+@socketio.on('leave')
+def on_leave():
+    username = session['username']
+    channel = session['channel']
+    emit("left_channel", username + "has left the room", room = channel)
+    leave_room(channel)
+    session.pop('channel', None)
 
 @socketio.on("return_message")
 def append_message(message):
@@ -122,11 +136,10 @@ def append_message(message):
 @socketio.on("get_all_messages")
 def all_messages():
     channel = session["channel"]
-    join_room(channel)
     user_messages = all_channels.get_channel(channel).get_messages()
     users = [ pair[0] for pair in user_messages]
     messages = [ pair[1] for pair in user_messages]
-    
+
     # pprint.pprint(all_users)
     # pprint.pprint(all_channels)
     emit("all_messages", {"users": users, "messages": messages})

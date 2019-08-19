@@ -1,15 +1,23 @@
+
 document.addEventListener("DOMContentLoaded", () => {
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
     //console.log("1");
     socket.on('connect' , () => {
-      socket.emit("get_all_messages");
-      //console.log("2");
-      document.querySelector("form").onsubmit = () => {
-          //console.log("3");
-          const message = document.querySelector("#input_message").value;
-          socket.emit('return_message', {'message': message});
+        socket.emit("join")
+        socket.emit("get_all_messages");
+        document.querySelector("form").onsubmit = () => {
+            const message = document.querySelector("#input_message").value;
+            socket.emit('return_message', {'message': message});
 
-      };
+        };
+
+        socket.on('disconnect' , () => {
+            socket.emit("leave");
+        });
+    });
+
+    socket.on('disconnect' , () => {
+        socket.emit("leave");
     });
 
     socket.on("append_message", user_message => {
@@ -36,9 +44,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
             //console.log(document.cookie)
         }
-        console.log("5");
     });
-    //console.log("6");
+
+    socket.on("joined_channel", data => {
+        document.querySelector("#messages").append(data);
+    });
+
+    socket.on("left_channel", data => {
+      document.querySelector("#messages").append(data);
+    });
+
+
     return false;
 
 });
