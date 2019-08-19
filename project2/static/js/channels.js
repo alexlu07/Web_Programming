@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const array = data.results;
 
           if(array.length > 0) {
+              document.querySelector("#new_channel").outerHTML = "<select id = 'new_channel' name = 'channel'></select>"
               const op = document.createElement('option');
 
               for(var i = 0; i < array.length; i++) {
@@ -34,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
               document.querySelector("#new_channel").hidden = false;
               document.querySelector("#submit_new_channel").hidden = false;
               console.log(op.value);
+          } else {
+              document.querySelector("#new_channel").outerHTML = "<h3 id = 'new_channel'>No search results found</h3>";
           }
 
         };

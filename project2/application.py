@@ -5,7 +5,9 @@ from flask import Flask
 from flask import jsonify, json
 import requests
 import pprint
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room, leave_room
+
+#Flask run --host=192.168.86.35
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR\xa1\xa8"
@@ -14,10 +16,6 @@ socketio = SocketIO(app)
 user_derek = all_users.create_user("derek", "123")
 user_alex  = all_users.create_user("alex", "123")
 user_jun   = all_users.create_user("jun", "123")
-
-print("=" * 10 + " 1")
-pprint.pprint(all_users)
-pprint.pprint(all_channels)
 
 channelAlex = "Alex_private"
 channelDerek = "Derek_private"
@@ -84,7 +82,7 @@ def new():
 @app.route("/channels")
 def channel_list():
     username = session["username"]
-    channel_names = all_channels.get_channels()
+    channel_names = get_user().get_channels()
     return render_template("channels.html", username = username, channel_list=channel_names)
 
 @app.route("/join", methods=["POST", "GET"])
@@ -103,13 +101,14 @@ def search():
     print("search=" + search)
 
     channel_names = list(all_channels.get_channels())
-    results  = [x for x in channel_names if search in x]
-    print(results)
+    results = [x for x in channel_names if search.lower() in x.lower()]
+
     return jsonify(results = results)
 
 @app.route("/channels/<channel>")
 def room(channel):
     return render_template("room.html")
+
 
 @socketio.on("return_message")
 def append_message(message):
@@ -118,16 +117,16 @@ def append_message(message):
     channel = session["channel"]
     all_channels.get_channel(channel).append_messages(username, message)
     print("username: {}, message: {}, channel: {}".format(username, message, channel))
-    emit('append_message', {"message": message, "username": username}, broadcast = True)
+    emit('append_message', {"message": message, "username": username}, room=channel)
 
 @socketio.on("get_all_messages")
 def all_messages():
     channel = session["channel"]
+    join_room(channel)
     user_messages = all_channels.get_channel(channel).get_messages()
-    pprint.pprint(all_users)
-    pprint.pprint(all_channels)
     users = [ pair[0] for pair in user_messages]
     messages = [ pair[1] for pair in user_messages]
-    print(users)
-    print(messages)
+    
+    # pprint.pprint(all_users)
+    # pprint.pprint(all_channels)
     emit("all_messages", {"users": users, "messages": messages})

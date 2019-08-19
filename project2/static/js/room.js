@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const p = document.createElement("p");
         p.innerHTML = `${user_message["username"]}: ${user_message["message"]}`;
         document.querySelector("#messages").append(p);
+
+        //console.log(document.cookie)
     });
 
     socket.on("all_messages", data => {
@@ -32,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
             p.innerHTML = `${username}: ${message}`;
             document.querySelector("#messages").append(p);
 
+            //console.log(document.cookie)
         }
         console.log("5");
     });
