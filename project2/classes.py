@@ -6,6 +6,7 @@ class Channel:
         self.name = name
         self.users = set()
         self.messages = []
+        self.active_users = set()
 
     def add_user(self, user):
         #print("channel: {} add user {}".format(self.name, user))
@@ -22,6 +23,16 @@ class Channel:
 
     def get_name(self):
         return self.name
+
+    def set_active_user(self, user, active):
+        if user in self.users:
+            if active:
+                self.active_users.add(user)
+            else:
+                self.active_users.remove(user)
+
+    def get_active_users(self):
+        return self.active_users
 
     def __repr__(self):
         result = {

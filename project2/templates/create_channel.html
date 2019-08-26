@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script src= " {{ url_for('static', filename="js/create_channel.js") }} " ></script>
+
+  </head>
+  <body>
+
+
+      <form action = {{ url_for("create") }} method="post" id ="input_form">
+          <input autofocus placeholder="Enter name here." id = "input_channel_name" type="text" name="input_channel_name">
+          <input id="submit" type="submit" value="Create!">
+      </form>
+
+      {{error}}
+
+
+  </body>
+</html>
+                                          

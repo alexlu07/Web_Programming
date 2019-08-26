@@ -7,9 +7,32 @@
     <script src= " {{ url_for('static', filename="js/channels.js") }} " ></script>
     <style media="screen">
 
-        h1 , h3, p, a, select{
+        h1 , h3, p, a, #search, button{
           margin-left: 12vw;
           margin-top: 6vw;
+        }
+
+        select {
+          margin-left: 12vw;
+          margin-top: 6vw;
+          overflow: auto;
+          -moz-appearance: none;
+          -webkit-appearance: none;
+          border:0px;
+          outline:0px;
+        }
+
+        select::-ms-expand {
+            display: none;
+        }
+
+        option:hover {
+            background-color: rgb(200, 200, 200);
+        }
+
+        option {
+            text-decoration: underline;
+            border: 1px;
         }
 
     </style>
@@ -17,24 +40,24 @@
   <body>
     <h1>Hello, {{ username }}!</h1>
 
-    <form action= {{ url_for("join") }} method="post">
-        <select name="channel">
+    <form action= {{ url_for("join") }} method="post" >
+        <select name="channel" >
             {% for x in channel_list %}
             <option value={{ x }} >{{ x }}</option></p>
             {% endfor %}
+
         </select>
-        <input type="submit" value="Join">
     </form>
 
     <form id="search">
         <input id="search_input" type="search" name="search" placeholder="Join new channel...">
-        <input id="submit" type="submit" value="Search">
+        <input id="submit" type="submit" value="Search" class = "btn btn-primary">
     </form>
 
     <form action= {{ url_for("join") }} method="post">
-        <select hidden id = "new_channel" name="channel">
+        <select hidden id = "new_channel" name="channel" >
         </select>
-        <input hidden id = "submit_new_channel" type="submit">
     </form>
+    <button id = "create_channel" class = "btn btn-primary">Create new channel.</button>
   </body>
 </html>

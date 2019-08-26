@@ -92,6 +92,7 @@ def join():
     user = get_user()
     print(channel)
     user.join_channel(channel)
+
     session["channel"] = channel
     return redirect(url_for("room", channel=channel))
 
@@ -107,22 +108,43 @@ def search():
 
 @app.route("/channels/<channel>")
 def room(channel):
-    return render_template("room.html")
+    userlist = all_channels.get_channel(channel).get_users()
+    return render_template("room.html", userlist = userlist)
+
+@app.route("/create", methods=["GET", "POST"])
+def create():
+    if request.method == "POST":
+        channel_name = request.form.get("input_channel_name")
+        if channel_name in all_channels.get_channels():
+            render_template("create_channel.html", error = "Channel name already taken.")
+        else:
+            all_channels.create_channel(channel_name)
+            get_user().join_channel(channel_name)
+            session["channel"] = channel_name
+            return redirect(url_for("room", channel = channel_name))
+    return render_template("create_channel.html", error = "")
 
 @socketio.on('join')
 def on_join():
+    print("on_join")
     username = session['username']
-    channel = session['channel']
+    channel = session["channel"]
+    users = all_channels.get_channel(channel).get_users()
+    all_channels.get_channel(channel).set_active_user(username, True)
+    active_users = all_channels.get_channel(channel).get_active_users()
     join_room(channel)
-    emit("joined_channel", username + ' has entered the room.', room=channel)
+    emit("update_users", {"username": username, "users": list(users), "active_users": list(active_users)}, room=channel)
 
-@socketio.on('leave')
+@socketio.on("leave")
 def on_leave():
     username = session['username']
-    channel = session['channel']
-    emit("left_channel", username + "has left the room", room = channel)
+    channel = session.pop("channel", None)
+    all_channels.get_channel(channel).set_active_user(username, False)
+    active_users = all_channels.get_channel(channel).get_active_users()
+    users = all_channels.get_channel(channel).get_users()
+    emit("update_users", {"username": username, "users": list(users), "active_users": list(active_users)}, room=channel)
     leave_room(channel)
-    session.pop('channel', None)
+
 
 @socketio.on("return_message")
 def append_message(message):
