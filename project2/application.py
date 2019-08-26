@@ -41,6 +41,11 @@ def get_user():
 def index():
     return render_template("index.html")
 
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.pop("username", None)
+    return redirect(url_for("index"))
+
 @app.route("/login", methods=["POST"])
 def login():
     username = request.form.get("username")
@@ -74,7 +79,7 @@ def new():
     if username in userlist:
         return jsonify({"success": False, "message": "Username already taken"})
 
-    all_users.create_user(username, password, all_channels)
+    all_users.create_user(username, password)
 
     session["username"] = username
     return jsonify({"success": True})
@@ -87,10 +92,8 @@ def channel_list():
 
 @app.route("/join", methods=["POST", "GET"])
 def join():
-    print(request)
     channel = request.form.get("channel")
     user = get_user()
-    print(channel)
     user.join_channel(channel)
 
     session["channel"] = channel
@@ -99,7 +102,6 @@ def join():
 @app.route("/search", methods=["POST"])
 def search():
     search = request.form.get("search")
-    print("search=" + search)
 
     channel_names = list(all_channels.get_channels())
     results = [x for x in channel_names if search.lower() in x.lower()]
@@ -108,21 +110,26 @@ def search():
 
 @app.route("/channels/<channel>")
 def room(channel):
-    userlist = all_channels.get_channel(channel).get_users()
-    return render_template("room.html", userlist = userlist)
+    return render_template("room.html", channel_name = channel)
 
 @app.route("/create", methods=["GET", "POST"])
 def create():
     if request.method == "POST":
         channel_name = request.form.get("input_channel_name")
+        channel_name = channel_name.replace(" ", "_")
         if channel_name in all_channels.get_channels():
-            render_template("create_channel.html", error = "Channel name already taken.")
+            error = "Channel name already taken."
+            return render_template("create_channel.html", error = error)
         else:
             all_channels.create_channel(channel_name)
             get_user().join_channel(channel_name)
             session["channel"] = channel_name
             return redirect(url_for("room", channel = channel_name))
+
+    print("hi")
     return render_template("create_channel.html", error = "")
+
+
 
 @socketio.on('join')
 def on_join():
@@ -152,7 +159,6 @@ def append_message(message):
     username = session["username"]
     channel = session["channel"]
     all_channels.get_channel(channel).append_messages(username, message)
-    print("username: {}, message: {}, channel: {}".format(username, message, channel))
     emit('append_message', {"message": message, "username": username}, room=channel)
 
 @socketio.on("get_all_messages")
@@ -162,6 +168,4 @@ def all_messages():
     users = [ pair[0] for pair in user_messages]
     messages = [ pair[1] for pair in user_messages]
 
-    # pprint.pprint(all_users)
-    # pprint.pprint(all_channels)
     emit("all_messages", {"users": users, "messages": messages})

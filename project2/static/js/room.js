@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
         username = data["username"];
         users = data["users"];
         active_users = data["active_users"];
-
+        console.log(users);
         for(var x = 0; x < users.length; x++) {
             if(document.querySelector("#userlist").querySelectorAll("p").length < users.length) {
                 let p = document.createElement("p");

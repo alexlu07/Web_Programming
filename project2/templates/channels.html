@@ -35,6 +35,12 @@
             border: 1px;
         }
 
+        #logout {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+        }
+
     </style>
   </head>
   <body>
@@ -59,5 +65,9 @@
         </select>
     </form>
     <button id = "create_channel" class = "btn btn-primary">Create new channel.</button>
+
+    <form action= {{ url_for("logout") }} method="post">
+        <button id = "logout" value="" type="submit" class="btn btn-primary">Logout</button>
+    </form>
   </body>
 </html>
