@@ -1,0 +1,12 @@
+{% block head %}
+{% endblock %}
+
+{% block body %}
+<form action="{% url 'order_form' %}" method="post">
+    <button data-type="beverages"></button>
+    <button data-type="salad"></button>
+    <button data-type="pizza"></button>
+    <button data-type="subs"></button>
+    <button data-type="pasta"></button>
+</form>
+{% endblock %}

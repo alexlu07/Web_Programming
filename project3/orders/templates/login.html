@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block head %}
+<style media="screen">
+    body > * {
+        margin-left: 70px;
+        margin-right: 400px;
+        margin-top: 25px;
+    }
+
+    @keyframes change {
+      0% {
+          color:black;
+      }
+      5%  {
+          color:red;
+      }
+      100% {
+          color:black;
+
+      }
+  }
+
+
+  #message {
+      animation-name: change;
+      animation-duration: 2s;
+      animation-fill-mode: forwards;
+  }
+
+</style>
+
+<script type="text/javascript">
+    document.addEventListener('click', event => {
+        const element = event.target;
+        if (element.className === 'hide') {
+            element.parentElement.style.animationPlayState = 'running';
+            element.parentElement.addEventListener('animationend', () =>  {
+                element.parentElement.remove();
+            });
+        }
+    });
+</script>
+
+{% endblock %}
+{% block body %}
+<h1>Login</h1>
+
+<form action="{% url 'login' %}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="email">Username:</label>
+        <input type="text" class="form-control" name="username">
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" class="form-control" name="password">
+    </div>
+    <input class="btn btn-primary" type="submit" value="Login"/>
+</form>
+{% if message %}
+    <div>
+        <h6 id="message">{{ message }}</h6>
+    </div>
+{% endif %}
+{% endblock %}
