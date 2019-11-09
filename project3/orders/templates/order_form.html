@@ -1,12 +1,28 @@
+{% extends "base.html" %}
 {% block head %}
+<style media="screen">
+
+</style>
+
 {% endblock %}
 
 {% block body %}
 <form action="{% url 'order_form' %}" method="post">
-    <button data-type="beverages"></button>
-    <button data-type="salad"></button>
-    <button data-type="pizza"></button>
-    <button data-type="subs"></button>
-    <button data-type="pasta"></button>
+    {% csrf_token %}
+
+    {% for i in types %}
+    <div>
+      <h2>{{ i|title }}{{ 2|pluralize }}</h2>
+
+      {% for j in items %}
+      {% if j.type == i %}
+      <button type = "submit" name = "item"
+      value = '{"type": "{{ j.type }}" , "name": "{{ j.name }}", "size": "{{ j.size }}", "cost": {{ j.cost }} }' 
+      >{{ j.name }} {{ j.size|title }} {{ j.cost }}</button>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% endfor %}
 </form>
+
 {% endblock %}

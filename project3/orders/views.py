@@ -1,8 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from .models import *
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_protect
+import json
+
 # Create your views here.
 
 def index(request):
@@ -49,5 +53,23 @@ def sign_up(request):
 def order(request):
     return render(request, "order.html")
 
+
 def order_form(request):
-    return render(request, "order.html")
+    if request.method == "POST":
+        item_str = request.POST["item"]
+        print("item_str:" + item_str)
+        item = json.loads(item_str)
+        print(item)
+        get_item = Items.objects.get(type=item["type"], name=item["name"], size=item["size"], cost=item["cost"])
+        print("get_item: ")
+        print(get_item)
+        order = Orders(item = get_item)
+        print(order.item.type)
+        order.save()
+        print(Orders.objects.all())
+    types = set()
+    items = Items.objects.all()
+    for i in items:
+        types.add(i.type)
+
+    return render(request, "order_form.html", {"types": types, "items": items})

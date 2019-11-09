@@ -8,42 +8,22 @@ class User(models.Model):
     def __str__(self):
         return f"{self.id} - username = {self.username}, password = {self.password}"
 
-class Beverage(models.Model):
+class Items(models.Model):
+    type = models.CharField(max_length=64)
     name = models.CharField(max_length=64)
-    cost = models.DecimalField(decimal_places=2,max_digits=5)
+    size = models.CharField(max_length=64)
+    cost = models.DecimalField(decimal_places=2,max_digits=10)
 
-class Salad(models.Model):
+class Toppings(models.Model):
+    type = models.CharField(max_length=64)
     name = models.CharField(max_length=64)
-    cost = models.DecimalField(decimal_places=2,max_digits=5)
+    size = models.CharField(max_length=64)
+    cost = models.DecimalField(decimal_places=2,max_digits=10)
 
-class Salad_Extras(models.model):
-    name = models.CharField(max_length=64)
-    cost = models.DecimalField(decimal_places=2,max_digits=5)
+class Orders(models.Model):
+    item = models.ForeignKey(Items, on_delete=models.CASCADE)
+    # toppings = models.ForeignKey(Toppings, on_delete=models.CASCADE)
 
-class Pizza(models.model):
-    name = models.CharField(max_length=64)
-    small_cost = models.DecimalField(decimal_places=2,max_digits=5)
-    large_cost = models.DecimalField(decimal_places=2,max_digits=5)
-
-class Pizza_Toppings(models.model):
-    name = models.CharField(max_length=64)
-    small_cost = models.DecimalField(decimal_places=2,max_digits=5)
-    large_cost = models.DecimalField(decimal_places=2,max_digits=5)
-
-class Sub(models.model):
-    name = models.CharField(max_length=64)
-    small_cost = models.DecimalField(decimal_places=2,max_digits=5)
-    large_cost = models.DecimalField(decimal_places=2,max_digits=5)
-
-class Sub_Extras(models.model):
-    name = models.CharField(max_length=64)
-    small_cost = models.DecimalField(decimal_places=2,max_digits=5)
-    large_cost = models.DecimalField(decimal_places=2,max_digits=5)
-
-class Pasta(models.model):
-    name = models.CharField(max_length=64)
-    cost = models.DecimalField(decimal_places=2,max_digits=5)
-
-class Pasta_Extras(models.model):
-    name = models.CharField(max_length=64)
-    cost = models.DecimalField(decimal_places=2,max_digits=5)
+    def __str__(self):
+        return f"{self.id} - item = {self.item}"
+        # return f"{self.id} - item = {self.item}, toppings = {self.toppings}"
